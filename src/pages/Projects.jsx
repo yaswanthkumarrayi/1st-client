@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
 import { RefreshCw, Calendar, MapPin, Eye, Star, Building, ArrowRight, Video, Clock, Users, Award } from 'lucide-react';
+import projectsData from '../data/projects.json';
 
 export default function Projects() {
   const [projects, setProjects] = useState([]);
@@ -8,83 +8,14 @@ export default function Projects() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-  // Static fallback data for if database is empty
-  const fallbackProjects = [
-    {
-      id: 'fallback-1',
-      title: 'Premium Gated Community',
-      description: 'A premium gated community with lush green parks and modern amenities.',
-      images: ['/pr-1.jpg'],
-      created_at: new Date().toISOString()
-    },
-    {
-      id: 'fallback-2',
-      title: 'Commercial Development',
-      description: 'Prime commercial land ideal for business and investment opportunities.',
-      images: ['/pr-2.jpg'],
-      created_at: new Date().toISOString()
-    },
-    {
-      id: 'fallback-3',
-      title: 'Residential Enclave',
-      description: 'A serene residential enclave surrounded by nature and tranquility.',
-      images: ['/pr-3.jpg'],
-      created_at: new Date().toISOString()
-    },
-    {
-      id: 'fallback-4',
-      title: 'Modern Villas',
-      description: 'Modern villas with contemporary architecture and landscaped gardens.',
-      images: ['/pr-4.jpg'],
-      created_at: new Date().toISOString()
-    },
-    {
-      id: 'fallback-5',
-      title: 'Luxury Apartments',
-      description: 'Luxury apartments offering panoramic views and top-class facilities.',
-      images: ['/pr-5.jpg'],
-      created_at: new Date().toISOString()
-    },
-    {
-      id: 'fallback-6',
-      title: 'Eco-Friendly Township',
-      description: 'Eco-friendly township with rainwater harvesting and solar lighting.',
-      images: ['/pr-6.jpg'],
-      created_at: new Date().toISOString()
-    }
-  ];
-
   useEffect(() => {
     fetchProjects();
   }, []);
 
   const fetchProjects = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching projects:', error);
-        // Use fallback data if database fetch fails
-        setProjects(fallbackProjects);
-      } else {
-        // If no projects in database, use fallback data
-        if (data && data.length > 0) {
-          setProjects(data);
-        } else {
-          setProjects(fallbackProjects);
-        }
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      // Use fallback data on error
-      setProjects(fallbackProjects);
-    } finally {
-      setLoading(false);
-    }
+    setLoading(true);
+    setProjects(projectsData);
+    setLoading(false);
   };
 
   const handleViewProject = (project) => {
@@ -191,7 +122,7 @@ export default function Projects() {
                 <MapPin className="w-16 h-16 lg:w-20 lg:h-20 text-orange-600 mx-auto mb-6" />
                 <h3 className="text-2xl lg:text-3xl font-bold text-slate-800 mb-4">No Projects Available Yet</h3>
                 <p className="text-lg text-slate-600 mb-8 leading-relaxed">
-                  Our admin team will add projects here soon. In the meantime, check out our amazing video gallery to see our work in action!
+                  Project listings are updated periodically. In the meantime, visit our video gallery to see our work in action.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">

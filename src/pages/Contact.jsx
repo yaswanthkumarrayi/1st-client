@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Phone, Mail, MapPin, Send, User, MessageSquare, CheckCircle, AlertCircle, Star, Building, Clock, Users } from "lucide-react";
-import { supabase } from '../lib/supabase';
+import { Phone, Mail, MapPin, Send, User, MessageSquare, Star, Building, Clock, Users } from "lucide-react";
 
 const socialLinks = [
   {
@@ -49,6 +48,7 @@ const socialLinks = [
 ];
 
 const Contact = () => {
+  const whatsappNumber = '917032836799';
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -56,9 +56,6 @@ const Contact = () => {
     subject: '',
     message: ''
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState(null);
-
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
@@ -66,50 +63,20 @@ const Contact = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitStatus(null);
 
-    try {
-      console.log('Submitting form data:', formData);
-      
-      const { data, error } = await supabase
-        .from('form')
-        .insert([
-          {
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone,
-            subject: formData.subject,
-            message: formData.message
-          }
-        ]);
+    const whatsappMessage = [
+      'New enquiry from website:',
+      `Name: ${formData.name}`,
+      `Email: ${formData.email}`,
+      `Phone: ${formData.phone || 'Not provided'}`,
+      `Subject: ${formData.subject || 'Not provided'}`,
+      `Message: ${formData.message || 'Not provided'}`
+    ].join('\n');
 
-      console.log('Supabase insert response:', { data, error });
-
-      if (error) {
-        throw error;
-      }
-
-      console.log('Form submitted successfully');
-      setSubmitStatus('success');
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: ''
-      });
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      setSubmitStatus('error');
-    } finally {
-      setIsSubmitting(false);
-      setTimeout(() => {
-        setSubmitStatus(null);
-      }, 5000);
-    }
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+    window.location.assign(whatsappUrl);
   };
 
   return (
@@ -297,31 +264,9 @@ const Contact = () => {
 
           {/* Form Content */}
           <div className="p-6 sm:p-8 lg:p-12">
-            {/* Status Messages */}
-            {submitStatus === 'success' && (
-              <div className="mb-6 sm:mb-8 p-4 sm:p-6 bg-green-50 border-2 border-green-200 rounded-2xl flex items-center gap-3 shadow-lg">
-                <div className="bg-green-500 rounded-full p-2">
-                  <CheckCircle className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-green-800 text-lg">Thank you for your enquiry!</h4>
-                  <p className="text-green-700">We will get back to you within 24 hours.</p>
-                </div>
-              </div>
-            )}
-
-            {submitStatus === 'error' && (
-              <div className="mb-6 sm:mb-8 p-4 sm:p-6 bg-red-50 border-2 border-red-200 rounded-2xl flex items-center gap-3 shadow-lg">
-                <div className="bg-red-500 rounded-full p-2">
-                  <AlertCircle className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-red-800 text-lg">Oops! Something went wrong</h4>
-                  <p className="text-red-700">Please try submitting the form again.</p>
-                </div>
-              </div>
-            )}
-            
+            <p className="mb-6 text-center text-slate-600 text-sm sm:text-base">
+              Submitting opens WhatsApp with your message so you can send it to us directly.
+            </p>
             <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="relative group">
@@ -417,20 +362,10 @@ const Contact = () => {
               <div className="text-center pt-4">
                 <button
                   type="submit"
-                  disabled={isSubmitting}
-                  className="bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-bold px-8 sm:px-12 py-4 sm:py-5 rounded-2xl text-lg sm:text-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center justify-center gap-3 mx-auto disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 min-w-[200px]"
+                  className="bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-bold px-8 sm:px-12 py-4 sm:py-5 rounded-2xl text-lg sm:text-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center justify-center gap-3 mx-auto min-w-[200px]"
                 >
-                  {isSubmitting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                      <span>Submitting...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-6 h-6" />
-                      <span>Send Message</span>
-                    </>
-                  )}
+                  <Send className="w-6 h-6" />
+                  <span>Send via WhatsApp</span>
                 </button>
               </div>
             </form>
